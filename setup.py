@@ -9,7 +9,7 @@ setuptools.setup(
     name="json-operations",
     version=__version__,
     author="Cedar",
-    author_email="support@cedar.com",
+    author_email="",
     license="MIT",
     description="Specify function operations is JSON",
     long_description=long_description,
