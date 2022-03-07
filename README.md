@@ -17,10 +17,10 @@ execute(operations, data2) # -> False
 ```
 
 ## API
-``python
+```python
 from json_operations import execute
 
-execute(<Operations>)
+execute(<operations>, <data_dictionary>)
 ```
 
 ## Operators
