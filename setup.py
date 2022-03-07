@@ -26,11 +26,5 @@ setuptools.setup(
     ),
     python_requires=">=3.6",
     install_requires=[],
-    extras_require={
-        "test": [
-            "parameterized==0.8.1",
-            "black==22.1.0",
-            "isort==5.10.1"
-        ]
-    },
+    extras_require={"test": ["parameterized==0.8.1", "black==22.1.0", "isort==5.10.1"]},
 )

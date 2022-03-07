@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-docker-compose run --rm test  python -m unittest discover
+docker-compose run --rm test /bin/bash -c "black . && isort . && python -m unittest discover"

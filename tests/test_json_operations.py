@@ -2,18 +2,8 @@ from unittest import TestCase
 
 from parameterized import parameterized
 
-from json_operations import (
-    and_,
-    equal,
-    execute,
-    greater,
-    greater_or_equal,
-    in_,
-    less,
-    less_or_equal,
-    not_equal,
-    or_,
-)
+from json_operations import (and_, equal, execute, greater, greater_or_equal,
+                             in_, less, less_or_equal, not_equal, or_)
 
 
 class TestJsonOperations(TestCase):
