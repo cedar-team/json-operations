@@ -1,0 +1,41 @@
+name: GitHub PR test runner
+on: [pull_request]
+jobs:
+  pr-validator:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f #pin to latest release: v2.3.4
+        with:
+          # we actually need "github.event.pull_request.commits + 1" commit
+          fetch-depth: 0
+      - name: Fetch origin/master
+        run: git -c protocol.version=2 fetch --depth=1 --prune --progress --no-recurse-submodules origin +master
+      - name: Node setup
+        uses: actions/setup-node@v2.1.0
+      - name: Check commit syntax
+        run: |
+          yarn add @commitlint/cli@12.1.4 @commitlint/config-conventional
+          echo "module.exports = {extends: ['@commitlint/config-conventional']}" > commitlint.config.js
+          yarn run commitlint --from HEAD~${{ github.event.pull_request.commits }} --to HEAD
+      - name: Get changed files
+        id: changed_files
+        run: |
+          changed_files=$(git diff --name-only --diff-filter=d origin/master..HEAD | grep -E '*\.py$' | tr '\n' ' ')
+          echo "::set-output name=changed_py_files::$changed_files"
+      - name: Set up Python 3.6
+        if: steps.changed_files.outputs.changed_py_files != ''
+        uses: actions/setup-python@dc73133d4da04e56a135ae2246682783cc7c7cb6 #pin to latest version v2.2.2
+        with:
+          python-version: 3.6
+      - name: Install linting packages
+        if: steps.changed_files.outputs.changed_py_files != ''
+        run: grep -P -o '(isort|black)==.+(?=;)' setup.py | xargs pip install
+      - name: black
+        if: steps.changed_files.outputs.changed_py_files != ''
+        run: black --check ${{ steps.changed_files.outputs.changed_py_files }}
+      - name: isort
+        if: steps.changed_files.outputs.changed_py_files != ''
+        run: isort --check --diff ${{ steps.changed_files.outputs.changed_py_files }}
+      - name: Run unit tests
+        run: python -m unittest discover

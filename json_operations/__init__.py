@@ -1,40 +1,9 @@
 from functools import wraps
-from typing import List, Literal, Sequence, Union
+from typing import List, Sequence, Union
 
 
 class OperationError(Exception):
     pass
-
-
-JSONLiteral = Union[int, float, str, None, List]
-
-Operation = Union[
-    Sequence[
-        Union[
-            Literal["="],
-            Literal["=="],
-            Literal["!="],
-            Literal[">"],
-            Literal[">="],
-            Literal["<"],
-            Literal["<="],
-            Literal["in"],
-        ],
-        "OperationOrLiteral",
-        "OperationOrLiteral",
-    ],
-    Sequence[
-        Union[Literal["null"], Literal["!null"], Literal["key"]],
-        "OperationOrLiteral",
-        "OperationOrLiteral",
-    ],
-    Sequence[
-        Union[Literal["and"], Literal["or"]],
-        "OperationOrLiteral",
-        ...,
-    ],
-]
-OperationOrLiteral = Union[Operation, JSONLiteral]
 
 
 def get_json_schema():
@@ -198,7 +167,7 @@ def get_key(context, key, default=None):
         return context
 
 
-def execute(json_operation: Operation, context):
+def execute(json_operation, context):
     # Stop the recursion, we have reached a literal
     if not isinstance(json_operation, list):
         return json_operation
