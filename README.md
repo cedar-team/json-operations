@@ -1,6 +1,8 @@
 # json-operations
-Specific complex conditional operations in JSON. The conditional operations can be run
-against a JSON value and will return a boolean.
+Specific complex conditional operations in JSON. The conditional operations can be run securely
+against a JSON value (Python dictionary) and will return a boolean. 
+
+
 
 ```python
 from json_operations import execute
@@ -15,6 +17,10 @@ data2 = {
 execute(operations, data1) # -> True
 execute(operations, data2) # -> False
 ```
+
+## Security
+All operations are safe (no use of eval). It's good to enforce a length limit if you are taking input
+from an untrusted source.
 
 ## API
 ```python
