@@ -279,3 +279,11 @@ execute(operations, data1) # -> False
 # (0 > 1 or 4 < 5) and (0 == 0 or 9 != 10) and (val in ["val", "another_val"] or -1 >= 0)
 execute(operations, data2) # -> True
 ```
+
+## Differences from json-logic 
+https://jsonlogic.com/
+
+- Operations are always type safe (cannot compare different types). json-logic will automatically convert different types and compare them, which can lead to issues that are tough to find
+- Invalid operations are errors instead of ignored. json-logic tries to avoid all errors and instead continues with unexpected input. This can lead to issues
+- More compact and intuitive syntax : `["or", ["key", "a"], ["key", "b"]]` vs `{"or": [["key", "a"], ["key", "b"]]}`
+- Only supports boolean logic. json-logic supports all types of operations (addition, subtraction, etc.), not just boolean logic
