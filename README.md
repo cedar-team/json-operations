@@ -285,5 +285,12 @@ https://jsonlogic.com/
 
 - Operations are always type safe (cannot compare different types). json-logic will automatically convert different types and compare them, which can lead to issues that are tough to find
 - Invalid operations are errors instead of ignored. json-logic tries to avoid all errors and instead continues with unexpected input. This can lead to issues
-- More compact and intuitive syntax : `["or", ["key", "a"], ["key", "b"]]` vs `{"or": [{"var": ["a"]}, {"var": ["b"]}]}`
+- More compact and intuitive syntax:
+```python
+["or", ["key", "a"], ["key", "b"]]
+``` 
+vs 
+```python
+{"or": [{"var": ["a"]}, {"var": ["b"]}]}
+```
 - Only supports boolean logic. json-logic supports all types of operations (addition, subtraction, etc.), not just boolean logic
