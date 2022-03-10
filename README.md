@@ -1,5 +1,5 @@
 # json-operations
-Specific complex conditional operations in JSON. The conditional operations can be run securely
+Specify complex conditional operations in JSON. The conditional operations can be run securely
 against a JSON value (Python dictionary) and will return a boolean. 
 
 
