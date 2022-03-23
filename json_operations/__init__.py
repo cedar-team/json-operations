@@ -2,8 +2,10 @@ from functools import wraps
 from typing import List, Sequence, Union
 
 
-class OperationError(Exception):
+class JsonOperationError(Exception):
     pass
+
+
 
 
 def get_json_schema():
@@ -11,79 +13,105 @@ def get_json_schema():
         "$schema": "http://json-schema.org/draft-07/schema",
         "definitions": {
             "operationOrLiteral": {
-                "oneOf": [
-                    {"$def": "#/definitions/operation"},
+                "anyOf": [
+                    {"$def": "#"},
                     {"type": ["string", "number", "boolean", "null"]},
                 ]
             },
-            "operation": {
-                "oneOf": [
+        },
+        "oneOf": [
+            {
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": [
+                    {"enum": ["=", "==", "!=", ">", ">=", "<", "<=", "in"]},
                     {
-                        "type": "array",
-                        "prefixItems": [
-                            {"enum": ["=", "==", "!=", ">", ">=", "<", "<=", "in"]},
-                            {
-                                "def": "#/definitions/operationOrLiteral",
-                            },
-                            {
-                                "def": "#/definitions/operationOrLiteral",
-                            },
-                        ],
+                        "$def": "#/definitions/operationOrLiteral",
                     },
                     {
-                        "type": "array",
-                        "prefixItems": [
-                            {"enum": ["null", "!null", "key"]},
-                            {
-                                "def": "#/definitions/operationOrLiteral",
-                            },
-                        ],
-                    },
-                    {
-                        "type": "array",
-                        "prefixItems": [
-                            {"enum": ["and", "or"]},
-                        ],
-                        "items": {
-                            "def": "#/definitions/operationOrLiteral",
-                        },
+                        "$def": "#/definitions/operationOrLiteral",
                     },
                 ],
             },
-        },
-        "$def": "#/definitions/operation",
+            {
+                "type": "array",
+                "minItems": 2,
+                "maxItems": 2,
+                "items": [
+                    {"enum": ["null", "!null", "key"]},
+                    {
+                        "$def": "#/definitions/operationOrLiteral",
+                    },
+                ],
+            },
+            {
+                "type": "array",
+                "minItems": 3,
+                "items": [
+                    {"enum": ["and", "or"]},
+                    {
+                        "$def": "#/definitions/operationOrLiteral",
+
+                    },
+                    {
+                        "$def": "#/definitions/operationOrLiteral",
+                    },
+                ],
+            },
+        ],
     }
 
+def _get_type_from_val(val):
+    if _is_number(val):
+        return "number"
+    elif isinstance(val, str):
+        return "string"
 
-def and_(*args):
+def _use_type_from_val(operator):
+    return operator in {">", "<", ">=", "<=", "=", "==", "!="}
+
+
+def _get_type_from_operator(operator, index):
+    if operator in {">", "<", ">=", "<="}:
+        return "number"
+    elif operator in {"=", "==", "!="}:
+        return ["number", "string"]
+    elif operator in {"in"}:
+        if index == 0:
+            return ["string", "number"]
+        elif index == 1:
+            return ["string", "array"]
+
+def _and(*args):
     return all(args)
 
 
-def or_(*args):
+def _or(*args):
     return any(args)
 
 
-def in_(needle, stack):
+def _in(needle, stack):
     return needle in stack
 
 
-def is_number(a):
+def _is_number(a):
     return isinstance(a, (int, float)) and not isinstance(a, bool)
 
 
-def same_type(a, b):
+def _same_type(a, b):
     # Different number types aren't the same type, so bucket all numbers
-    if is_number(a) and is_number(b):
+    if _is_number(a) and _is_number(b):
         return True
 
     return type(a) == type(b)
 
 
-def raise_type_error(operator_str):
+def _raise_type_error(operator_str):
     def dec(fn):
         @wraps(fn)
         def inner(a, b):
-            if not same_type(a, b):
+            if not _same_type(a, b):
                 raise TypeError(
                     f"'{operator_str}' not supported between instances of '{type(a).__name__}' and '{type(b).__name__}'"
                 )
@@ -94,34 +122,34 @@ def raise_type_error(operator_str):
     return dec
 
 
-@raise_type_error("==")
-def equal(a, b):
+@_raise_type_error("==")
+def _equal(a, b):
     return a == b
 
 
-@raise_type_error(">")
-def greater(a, b):
+@_raise_type_error(">")
+def _greater(a, b):
     return a > b
 
 
-@raise_type_error(">=")
-def greater_or_equal(a, b):
+@_raise_type_error(">=")
+def _greater_or_equal(a, b):
     return a >= b
 
 
-@raise_type_error("<")
-def less(a, b):
+@_raise_type_error("<")
+def _less(a, b):
     return a < b
 
 
-@raise_type_error("<=")
-def less_or_equal(a, b):
+@_raise_type_error("<=")
+def _less_or_equal(a, b):
     return a <= b
 
 
-@raise_type_error("!=")
-def not_equal(a, b):
-    if not same_type(a, b):
+@_raise_type_error("!=")
+def _not_equal(a, b):
+    if not _same_type(a, b):
         raise TypeError(
             f"'!=' not supported between instances of '{type(a)}' and '{type(b)}'"
         )
@@ -129,31 +157,31 @@ def not_equal(a, b):
     return a != b
 
 
-def null_(a):
+def _null_(a):
     return a is None
 
 
-def not_null(a):
+def _not_null(a):
     return a is not None
 
 
-operators = {
-    "=": equal,
-    "==": equal,
-    "!=": not_equal,
-    ">": greater,
-    ">=": greater_or_equal,
-    "<": less,
-    "<=": less_or_equal,
-    "and": and_,
-    "or": or_,
-    "null": null_,
-    "!null": not_null,
-    "in": in_,
+_operators = {
+    "=": _equal,
+    "==": _equal,
+    "!=": _not_equal,
+    ">": _greater,
+    ">=": _greater_or_equal,
+    "<": _less,
+    "<=": _less_or_equal,
+    "and": _and,
+    "or": _or,
+    "null": _null_,
+    "!null": _not_null,
+    "in": _in,
 }
 
 
-def get_key(context, key, default=None):
+def _get_key(context, key, default=None):
     # Gets the key from the context dictionary
     try:
         for key in str(key).split("."):
@@ -167,6 +195,44 @@ def get_key(context, key, default=None):
         return context
 
 
+def get_keys(json_operation):
+    operator, *unparsed = json_operation
+
+    keys = []
+    if operator == "key":
+        keys.append(dict(name=unparsed[0], type=None, index=None))
+
+    subkeys = []
+    type_from_val = None
+    val = None
+    for index, item in enumerate(unparsed):
+        if isinstance(item, list):
+            results = get_keys(item)
+            for result in results:
+                if result["index"] is None:
+                    result["index"] = index
+            subkeys += results
+        else:
+            type_from_val = _get_type_from_val(item)
+
+    for key in subkeys:
+        if key["type"] is None:
+            type_from_operator = _get_type_from_operator(operator, key["index"])
+            if type_from_val and _use_type_from_val(operator):
+                key["type"] = type_from_val
+            elif type_from_operator:
+                key["type"] = type_from_operator
+
+            # Check to make sure the types are compatible
+            if (
+                    type_from_operator and type_from_val and type_from_operator != type_from_val and type_from_val not in type_from_operator):
+                raise JsonOperationError(
+                    f'Operation {json_operation} expects type "{type_from_operator}". But `{val}` is of type "{type_from_val}"'
+                )
+
+    return keys + subkeys
+
+
 def execute(json_operation, context):
     # Stop the recursion, we have reached a literal
     if not isinstance(json_operation, list):
@@ -176,12 +242,12 @@ def execute(json_operation, context):
     values = [execute(val, context) for val in unparsed]
 
     if operator == "key":
-        return get_key(context, *values)
+        return _get_key(context, *values)
 
-    if operator not in operators:
-        raise OperationError(f"Invalid operator: {operator}. {json_operation}")
+    if operator not in _operators:
+        raise JsonOperationError(f"Invalid operator: {operator}. {json_operation}")
 
     try:
-        return operators[operator](*values)
+        return _operators[operator](*values)
     except TypeError as e:
-        raise OperationError(f"{e}. {json_operation}")
+        raise JsonOperationError(f"{e}. {json_operation}")

@@ -2,8 +2,8 @@ from unittest import TestCase
 
 from parameterized import parameterized
 
-from json_operations import (and_, equal, execute, greater, greater_or_equal,
-                             in_, less, less_or_equal, not_equal, or_)
+from json_operations import (_and, _equal, execute, _greater, _greater_or_equal,
+                             _in, _less, _less_or_equal, _not_equal, _or, get_keys)
 
 
 class TestJsonOperations(TestCase):
@@ -21,7 +21,7 @@ class TestJsonOperations(TestCase):
         ]
     )
     def test_equal_operator(self, a, b, result):
-        self.assertEqual(equal(a, b), result)
+        self.assertEqual(_equal(a, b), result)
 
     @parameterized.expand(
         [
@@ -37,7 +37,7 @@ class TestJsonOperations(TestCase):
         ]
     )
     def test_not_equal_operator(self, a, b, result):
-        self.assertEqual(not_equal(a, b), result)
+        self.assertEqual(_not_equal(a, b), result)
 
     @parameterized.expand(
         [
@@ -55,7 +55,7 @@ class TestJsonOperations(TestCase):
         ]
     )
     def test_greater_operator(self, a, b, result):
-        self.assertEqual(greater(a, b), result)
+        self.assertEqual(_greater(a, b), result)
 
     @parameterized.expand(
         [
@@ -73,7 +73,7 @@ class TestJsonOperations(TestCase):
         ]
     )
     def test_less_operator(self, a, b, result):
-        self.assertEqual(less(a, b), result)
+        self.assertEqual(_less(a, b), result)
 
     @parameterized.expand(
         [
@@ -92,7 +92,7 @@ class TestJsonOperations(TestCase):
         ]
     )
     def test_less_or_equal_operator(self, a, b, result):
-        self.assertEqual(less_or_equal(a, b), result)
+        self.assertEqual(_less_or_equal(a, b), result)
 
     @parameterized.expand(
         [
@@ -111,7 +111,7 @@ class TestJsonOperations(TestCase):
         ]
     )
     def test_greater_or_equal_operator(self, a, b, result):
-        self.assertEqual(greater_or_equal(a, b), result)
+        self.assertEqual(_greater_or_equal(a, b), result)
 
     @parameterized.expand(
         [
@@ -128,7 +128,7 @@ class TestJsonOperations(TestCase):
         ]
     )
     def test_in_operator(self, a, b, result):
-        self.assertEqual(in_(a, b), result)
+        self.assertEqual(_in(a, b), result)
 
     @parameterized.expand(
         [
@@ -140,37 +140,37 @@ class TestJsonOperations(TestCase):
     )
     def test_operator_error(self, a, b):
         with self.assertRaises(TypeError):
-            equal(a, b)
+            _equal(a, b)
 
         with self.assertRaises(TypeError):
-            not_equal(a, b)
+            _not_equal(a, b)
 
         with self.assertRaises(TypeError):
-            less(a, b)
+            _less(a, b)
 
         with self.assertRaises(TypeError):
-            greater(a, b)
+            _greater(a, b)
 
     def test_and_operator(self):
-        self.assertEqual(and_(), True)
-        self.assertEqual(and_(False), False)
-        self.assertEqual(and_(True), True)
-        self.assertEqual(and_(True, False), False)
-        self.assertEqual(and_(False, False), False)
-        self.assertEqual(and_(True, True), True)
-        self.assertEqual(and_(True, True, True), True)
-        self.assertEqual(and_(True, False, True), False)
+        self.assertEqual(_and(), True)
+        self.assertEqual(_and(False), False)
+        self.assertEqual(_and(True), True)
+        self.assertEqual(_and(True, False), False)
+        self.assertEqual(_and(False, False), False)
+        self.assertEqual(_and(True, True), True)
+        self.assertEqual(_and(True, True, True), True)
+        self.assertEqual(_and(True, False, True), False)
 
     def test_or_operator(self):
-        self.assertEqual(or_(), False)
-        self.assertEqual(or_(False), False)
-        self.assertEqual(or_(True), True)
-        self.assertEqual(or_(True, False), True)
-        self.assertEqual(or_(False, False), False)
-        self.assertEqual(or_(True, True), True)
-        self.assertEqual(or_(True, True, True), True)
-        self.assertEqual(or_(True, False, True), True)
-        self.assertEqual(or_(False, False, False), False)
+        self.assertEqual(_or(), False)
+        self.assertEqual(_or(False), False)
+        self.assertEqual(_or(True), True)
+        self.assertEqual(_or(True, False), True)
+        self.assertEqual(_or(False, False), False)
+        self.assertEqual(_or(True, True), True)
+        self.assertEqual(_or(True, True, True), True)
+        self.assertEqual(_or(True, False, True), True)
+        self.assertEqual(_or(False, False, False), False)
 
     @parameterized.expand(
         [
@@ -249,5 +249,145 @@ class TestJsonOperations(TestCase):
     def test_json_function(self, a, b, result):
         self.assertEqual(
             execute(a, b),
+            result,
+        )
+
+    @parameterized.expand(
+        [
+            (
+                [
+                    "==",
+                    ["key", "customer_balance"],
+                    100,
+                ],
+                [dict(name="customer_balance", type="number", index=0)],
+            ),
+            (
+                [
+                    "==",
+                    100,
+                    ["key", "customer_balance"],
+                ],
+                [dict(name="customer_balance", type="number", index=1)],
+            ),
+            (
+                    [
+                        "==",
+                        ["key", "customer_name"],
+                        "hello",
+                    ],
+                    [dict(name="customer_name", type="string", index=0)],
+            ),
+            (
+                    [
+                        ">",
+                        100,
+                        ["key", "customer_balance"],
+                    ],
+                    [dict(name="customer_balance", type="number", index=1)],
+            ),
+            (
+                    [
+                        ">",
+                        ["key", "customer_payment_plan"],
+                        ["key", "customer_balance"],
+                    ],
+                    [
+                        dict(name="customer_payment_plan", type="number", index=0),
+                        dict(name="customer_balance", type="number", index=1),
+                    ],
+            ),
+            (
+                    [
+                        "in",
+                        "hello",
+                        ["key", "customer_types"],
+                    ],
+                    [
+                        dict(name="customer_types", type=["string", "array"], index=1),
+                    ],
+            ),
+            (
+                    [
+                        "in",
+                        ["key", "customer_type"],
+                        "hello,",
+                    ],
+                    [
+                        dict(name="customer_type", type=["string", "number"], index=0),
+                    ],
+            ),
+            (
+                    [
+                        "and",
+                         [
+                            "==",
+                            "hello",
+                            ["key", "customer_name"],
+                        ],
+                        [
+                            "==",
+                            ["key", "customer_balance"],
+                            100,
+                        ],
+                    ],
+                    [
+                        dict(name="customer_name", type="string", index=1),
+                        dict(name="customer_balance", type="number", index=0)
+                    ],
+            ),
+            (
+                    [
+                        "or",
+                        [
+                            "or",
+                            [
+                                ">",
+                                ["key", "key1"],
+                                100,
+                            ],
+                            [
+                                "<=",
+                                ["key", "key2"],
+                                100,
+                            ],
+                            [
+                                "==",
+                                ["key", "key3"],
+                                "test",
+                            ],
+                        ],
+                        [
+                            "and",
+                            [
+                                "in",
+                                ["key", "key4"],
+                                ["key", "key5"],
+                            ],
+                            [
+                                "null",
+                                ["key", "key6"],
+                            ],
+                            [
+                                "!null",
+                                ["key", "key7"],
+                            ],
+                        ],
+                    ],
+                    [
+                        dict(name="key1", type="number", index=0),
+                        dict(name="key2", type="number", index=0),
+                        dict(name="key3", type="string", index=0),
+                        dict(name="key4", type=["string", "number"], index=0),
+                        dict(name="key5", type=["string", "array"], index=1),
+                        dict(name="key6", type=None, index=0),
+                        dict(name="key7", type=None, index=0),
+                    ],
+            ),
+        ]
+    )
+    def test_get_keys(self, a, result):
+        self.assertEqual(
+            get_keys(a),
             result,
         )
