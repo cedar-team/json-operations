@@ -2,5 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v2.0.0 (2022-03-23)
+### Feature
+* **get_keys:** Add the ability to get keys inside an operation ([`b68ebc6`](https://github.com/cedar-team/json-operations/commit/b68ebc65480a8016f61441840eb7ae8214a61cf5))
+
+### Breaking
+* Changed OperationError to JSONOperationError  ([`b68ebc6`](https://github.com/cedar-team/json-operations/commit/b68ebc65480a8016f61441840eb7ae8214a61cf5))
+
+### Documentation
+* **readme:** Update wording ([`0e3526d`](https://github.com/cedar-team/json-operations/commit/0e3526db047153b760248f8b8ab7b972ef33d9f4))
+* **readme:** Update formatting for json-logic comparison ([`3ec9b50`](https://github.com/cedar-team/json-operations/commit/3ec9b5076dddb80cab44d36674eadd361b87d871))
+* **readme:** Update readme json logic example ([`9d88c18`](https://github.com/cedar-team/json-operations/commit/9d88c18e2f237fea07a13707c410e9af1f6695da))
+
 ## v1.0.1 (2022-03-08)
 
