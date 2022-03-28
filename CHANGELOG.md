@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v2.0.1 (2022-03-28)
+### Fix
+* **get_keys:** Fix bug in error get_keys ([`b606f6b`](https://github.com/cedar-team/json-operations/commit/b606f6ba2781a3f43dd0bae4d255de77059b72b7))
+
 ## v2.0.0 (2022-03-23)
 ### Feature
 * **get_keys:** Add the ability to get keys inside an operation ([`b68ebc6`](https://github.com/cedar-team/json-operations/commit/b68ebc65480a8016f61441840eb7ae8214a61cf5))
