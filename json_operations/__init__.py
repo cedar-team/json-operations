@@ -33,6 +33,7 @@ def get_json_schema():
                         "$def": "#/definitions/operationOrLiteral",
                     },
                 ],
+                "additionalItems": False
             },
             {
                 "type": "array",
@@ -44,6 +45,7 @@ def get_json_schema():
                         "$def": "#/definitions/operationOrLiteral",
                     },
                 ],
+                "additionalItems": False
             },
             {
                 "type": "array",
@@ -213,7 +215,14 @@ def get_keys(json_operation):
                     result["index"] = index
             subkeys += results
         else:
-            type_from_val = _get_type_from_val(item)
+            new_type_from_val = _get_type_from_val(item)
+            if type_from_val and new_type_from_val != type_from_val:
+                raise JsonOperationError(
+                    f'Operation {json_operation}" has values of different types. `{val}` is of type "{type_from_val}". '
+                    f'`{item}` is of type "{new_type_from_val}"'
+                )
+            type_from_val = new_type_from_val
+            val = item
 
     for key in subkeys:
         if key["type"] is None:
@@ -225,7 +234,7 @@ def get_keys(json_operation):
 
             # Check to make sure the types are compatible
             if (
-                    type_from_operator and type_from_val and type_from_operator != type_from_val and type_from_val not in type_from_operator):
+                type_from_operator and type_from_val and type_from_operator != type_from_val and type_from_val not in type_from_operator):
                 raise JsonOperationError(
                     f'Operation {json_operation} expects type "{type_from_operator}". But `{val}` is of type "{type_from_val}"'
                 )
