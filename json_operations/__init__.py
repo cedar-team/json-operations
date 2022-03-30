@@ -1,5 +1,5 @@
 from functools import wraps
-from typing import List, Sequence, Union
+from typing import List, Sequence, Union, Dict
 
 
 class JsonOperationError(Exception):
@@ -8,7 +8,7 @@ class JsonOperationError(Exception):
 
 
 
-def get_json_schema():
+def get_json_schema() -> Dict:
     return {
         "$schema": "http://json-schema.org/draft-07/schema",
         "definitions": {
@@ -197,7 +197,7 @@ def _get_key(context, key, default=None):
         return context
 
 
-def get_keys(json_operation):
+def get_keys(json_operation: List) -> List[Dict]:
     operator, *unparsed = json_operation
 
     keys = []
@@ -242,7 +242,7 @@ def get_keys(json_operation):
     return keys + subkeys
 
 
-def execute(json_operation, context):
+def execute(json_operation: List, context) -> bool:
     # Stop the recursion, we have reached a literal
     if not isinstance(json_operation, list):
         return json_operation

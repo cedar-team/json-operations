@@ -23,11 +23,35 @@ All operations are safe (no use of eval). It's good to enforce a length limit if
 from an untrusted source.
 
 ## API
+
+### execute
+Run the json operations against a data dictionary. Return True/False. Can raise a
+JsonOperationError if operations are invalid or keys don't exist
 ```python
 from json_operations import execute
 
-execute(<operations>, <data_dictionary>)
+execute(<operations>, <data_dictionary>) -> bool
 ```
+
+### get_json_schema
+Returns the [JSON Schema](https://json-schema.org/) for json operations. This is useful for validating operations 
+before running them
+```python
+from json_operations import get_json_schema
+
+get_json_schema() -> Dict
+```
+
+### get_keys
+Returns the keys inside json operations. This is useful for getting a list of keys necessary for the json operations
+and validating that all keys are inside the data dictionary
+```python
+from json_operations import get_keys
+
+get_keys(<operations>) -> List[Dict] 
+# [{"name": "key1", "type": "number", "index": 0}, ...]
+```
+
 
 ## Operators
 ### == (Equal operator)
