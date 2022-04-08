@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v2.0.2 (2022-04-08)
+### Fix
+* **find_keys:** Find_keys did not handle boolean type ([`5d95e35`](https://github.com/cedar-team/json-operations/commit/5d95e354e6955f54cd07decfb1fb62a0d33861ad))
+
+### Documentation
+* **readme:** Add get_json_schema and get_keys to readme ([`213107a`](https://github.com/cedar-team/json-operations/commit/213107a0f4d518b4df358290d9cf69615a53541d))
+
 ## v2.0.1 (2022-03-28)
 ### Fix
 * **get_keys:** Fix bug in error get_keys ([`b606f6b`](https://github.com/cedar-team/json-operations/commit/b606f6ba2781a3f43dd0bae4d255de77059b72b7))
