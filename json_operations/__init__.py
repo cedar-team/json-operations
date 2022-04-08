@@ -1,11 +1,9 @@
 from functools import wraps
-from typing import List, Sequence, Union, Dict
+from typing import Dict, List, Sequence, Union
 
 
 class JsonOperationError(Exception):
     pass
-
-
 
 
 def get_json_schema() -> Dict:
@@ -33,7 +31,7 @@ def get_json_schema() -> Dict:
                         "$def": "#/definitions/operationOrLiteral",
                     },
                 ],
-                "additionalItems": False
+                "additionalItems": False,
             },
             {
                 "type": "array",
@@ -45,7 +43,7 @@ def get_json_schema() -> Dict:
                         "$def": "#/definitions/operationOrLiteral",
                     },
                 ],
-                "additionalItems": False
+                "additionalItems": False,
             },
             {
                 "type": "array",
@@ -54,7 +52,6 @@ def get_json_schema() -> Dict:
                     {"enum": ["and", "or"]},
                     {
                         "$def": "#/definitions/operationOrLiteral",
-
                     },
                     {
                         "$def": "#/definitions/operationOrLiteral",
@@ -64,11 +61,15 @@ def get_json_schema() -> Dict:
         ],
     }
 
+
 def _get_type_from_val(val):
     if _is_number(val):
         return "number"
     elif isinstance(val, str):
         return "string"
+    elif isinstance(val, bool):
+        return "boolean"
+
 
 def _use_type_from_val(operator):
     return operator in {">", "<", ">=", "<=", "=", "==", "!="}
@@ -78,12 +79,13 @@ def _get_type_from_operator(operator, index):
     if operator in {">", "<", ">=", "<="}:
         return "number"
     elif operator in {"=", "==", "!="}:
-        return ["number", "string"]
+        return ["number", "string", "boolean"]
     elif operator in {"in"}:
         if index == 0:
             return ["string", "number"]
         elif index == 1:
             return ["string", "array"]
+
 
 def _and(*args):
     return all(args)
@@ -234,7 +236,11 @@ def get_keys(json_operation: List) -> List[Dict]:
 
             # Check to make sure the types are compatible
             if (
-                type_from_operator and type_from_val and type_from_operator != type_from_val and type_from_val not in type_from_operator):
+                type_from_operator
+                and type_from_val
+                and type_from_operator != type_from_val
+                and type_from_val not in type_from_operator
+            ):
                 raise JsonOperationError(
                     f'Operation {json_operation} expects type "{type_from_operator}". But `{val}` is of type "{type_from_val}"'
                 )

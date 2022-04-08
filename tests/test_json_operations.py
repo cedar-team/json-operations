@@ -2,8 +2,9 @@ from unittest import TestCase
 
 from parameterized import parameterized
 
-from json_operations import (_and, _equal, execute, _greater, _greater_or_equal,
-                             _in, _less, _less_or_equal, _not_equal, _or, get_keys)
+from json_operations import (_and, _equal, _greater, _greater_or_equal, _in,
+                             _less, _less_or_equal, _not_equal, _or, execute,
+                             get_keys)
 
 
 class TestJsonOperations(TestCase):
@@ -265,124 +266,151 @@ class TestJsonOperations(TestCase):
             (
                 [
                     "==",
+                    ["key", "customer_balance"],
+                    True,
+                ],
+                [dict(name="customer_balance", type="boolean", index=0)],
+            ),
+            (
+                [
+                    "==",
+                    ["key", "customer_something"],
+                    ["key", "customer_another"],
+                ],
+                [
+                    dict(
+                        name="customer_something",
+                        type=["number", "string", "boolean"],
+                        index=0,
+                    ),
+                    dict(
+                        name="customer_another",
+                        type=["number", "string", "boolean"],
+                        index=1,
+                    ),
+                ],
+            ),
+            (
+                [
+                    "==",
                     100,
                     ["key", "customer_balance"],
                 ],
                 [dict(name="customer_balance", type="number", index=1)],
             ),
             (
+                [
+                    "==",
+                    ["key", "customer_name"],
+                    "hello",
+                ],
+                [dict(name="customer_name", type="string", index=0)],
+            ),
+            (
+                [
+                    ">",
+                    100,
+                    ["key", "customer_balance"],
+                ],
+                [dict(name="customer_balance", type="number", index=1)],
+            ),
+            (
+                [
+                    ">",
+                    ["key", "customer_payment_plan"],
+                    ["key", "customer_balance"],
+                ],
+                [
+                    dict(name="customer_payment_plan", type="number", index=0),
+                    dict(name="customer_balance", type="number", index=1),
+                ],
+            ),
+            (
+                [
+                    "in",
+                    "hello",
+                    ["key", "customer_types"],
+                ],
+                [
+                    dict(name="customer_types", type=["string", "array"], index=1),
+                ],
+            ),
+            (
+                [
+                    "in",
+                    ["key", "customer_type"],
+                    "hello,",
+                ],
+                [
+                    dict(name="customer_type", type=["string", "number"], index=0),
+                ],
+            ),
+            (
+                [
+                    "and",
                     [
                         "==",
+                        "hello",
                         ["key", "customer_name"],
-                        "hello",
                     ],
-                    [dict(name="customer_name", type="string", index=0)],
-            ),
-            (
                     [
-                        ">",
+                        "==",
+                        ["key", "customer_balance"],
                         100,
-                        ["key", "customer_balance"],
                     ],
-                    [dict(name="customer_balance", type="number", index=1)],
+                ],
+                [
+                    dict(name="customer_name", type="string", index=1),
+                    dict(name="customer_balance", type="number", index=0),
+                ],
             ),
             (
-                    [
-                        ">",
-                        ["key", "customer_payment_plan"],
-                        ["key", "customer_balance"],
-                    ],
-                    [
-                        dict(name="customer_payment_plan", type="number", index=0),
-                        dict(name="customer_balance", type="number", index=1),
-                    ],
-            ),
-            (
-                    [
-                        "in",
-                        "hello",
-                        ["key", "customer_types"],
-                    ],
-                    [
-                        dict(name="customer_types", type=["string", "array"], index=1),
-                    ],
-            ),
-            (
-                    [
-                        "in",
-                        ["key", "customer_type"],
-                        "hello,",
-                    ],
-                    [
-                        dict(name="customer_type", type=["string", "number"], index=0),
-                    ],
-            ),
-            (
-                    [
-                        "and",
-                         [
-                            "==",
-                            "hello",
-                            ["key", "customer_name"],
-                        ],
-                        [
-                            "==",
-                            ["key", "customer_balance"],
-                            100,
-                        ],
-                    ],
-                    [
-                        dict(name="customer_name", type="string", index=1),
-                        dict(name="customer_balance", type="number", index=0)
-                    ],
-            ),
-            (
+                [
+                    "or",
                     [
                         "or",
                         [
-                            "or",
-                            [
-                                ">",
-                                ["key", "key1"],
-                                100,
-                            ],
-                            [
-                                "<=",
-                                ["key", "key2"],
-                                100,
-                            ],
-                            [
-                                "==",
-                                ["key", "key3"],
-                                "test",
-                            ],
+                            ">",
+                            ["key", "key1"],
+                            100,
                         ],
                         [
-                            "and",
-                            [
-                                "in",
-                                ["key", "key4"],
-                                ["key", "key5"],
-                            ],
-                            [
-                                "null",
-                                ["key", "key6"],
-                            ],
-                            [
-                                "!null",
-                                ["key", "key7"],
-                            ],
+                            "<=",
+                            ["key", "key2"],
+                            100,
+                        ],
+                        [
+                            "==",
+                            ["key", "key3"],
+                            "test",
                         ],
                     ],
                     [
-                        dict(name="key1", type="number", index=0),
-                        dict(name="key2", type="number", index=0),
-                        dict(name="key3", type="string", index=0),
-                        dict(name="key4", type=["string", "number"], index=0),
-                        dict(name="key5", type=["string", "array"], index=1),
-                        dict(name="key6", type=None, index=0),
-                        dict(name="key7", type=None, index=0),
+                        "and",
+                        [
+                            "in",
+                            ["key", "key4"],
+                            ["key", "key5"],
+                        ],
+                        [
+                            "null",
+                            ["key", "key6"],
+                        ],
+                        [
+                            "!null",
+                            ["key", "key7"],
+                        ],
                     ],
+                ],
+                [
+                    dict(name="key1", type="number", index=0),
+                    dict(name="key2", type="number", index=0),
+                    dict(name="key3", type="string", index=0),
+                    dict(name="key4", type=["string", "number"], index=0),
+                    dict(name="key5", type=["string", "array"], index=1),
+                    dict(name="key6", type=None, index=0),
+                    dict(name="key7", type=None, index=0),
+                ],
             ),
         ]
     )
