@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v2.0.4 (2022-05-10)
+### Fix
+* **schema:** Add missing array type from values. allow array in ([`94d562d`](https://github.com/cedar-team/json-operations/commit/94d562d12090eca3186f22cc7d665d2cf2b9dfab))
+
 ## v2.0.3 (2022-05-10)
 ### Fix
 * Change maxItems for and/or ([`74f5082`](https://github.com/cedar-team/json-operations/commit/74f508251e0aa152726f1ca63fa246d07db6e853))
