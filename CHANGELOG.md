@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v2.0.3 (2022-05-10)
+### Fix
+* Change maxItems for and/or ([`74f5082`](https://github.com/cedar-team/json-operations/commit/74f508251e0aa152726f1ca63fa246d07db6e853))
+
 ## v2.0.2 (2022-04-08)
 ### Fix
 * **find_keys:** Find_keys did not handle boolean type ([`5d95e35`](https://github.com/cedar-team/json-operations/commit/5d95e354e6955f54cd07decfb1fb62a0d33861ad))
