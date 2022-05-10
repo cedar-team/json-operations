@@ -13,7 +13,7 @@ def get_json_schema() -> Dict:
             "operationOrLiteral": {
                 "anyOf": [
                     {"$def": "#"},
-                    {"type": ["string", "number", "boolean", "null"]},
+                    {"type": ["string", "number", "boolean", "null", "array"]},
                 ]
             },
         },
@@ -184,6 +184,8 @@ _operators = {
     "in": _in,
 }
 
+_nesting_operators = {"and", "or"}
+
 
 def _get_key(context, key, default=None):
     # Gets the key from the context dictionary
@@ -254,7 +256,16 @@ def execute(json_operation: List, context) -> bool:
         return json_operation
 
     operator, *unparsed = json_operation
-    values = [execute(val, context) for val in unparsed]
+    if operator in _nesting_operators:
+        values = [execute(val, context) for val in unparsed]
+    else:
+        values = []
+        for val in unparsed:
+            # Check if it's a key operation
+            if isinstance(val, list) and 2 >= len(val) <= 3 and val[0] == "key":
+                values.append(_get_key(context, *val[1:]))
+            else:
+                values.append(val)
 
     if operator == "key":
         return _get_key(context, *values)

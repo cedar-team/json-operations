@@ -189,6 +189,28 @@ class TestJsonOperations(TestCase):
             ),
             (
                 [
+                    "in",
+                    ["key", "division"],
+                    ["something", "my_division"],
+                ],
+                dict(
+                    division="my_division",
+                ),
+                True,
+            ),
+            (
+                [
+                    "in",
+                    ["key", "division"],
+                    ["something", "not_my_division"],
+                ],
+                dict(
+                    division="my_division",
+                ),
+                False,
+            ),
+            (
+                [
                     "==",
                     ["key", "customer_balance"],
                     100,
@@ -333,6 +355,16 @@ class TestJsonOperations(TestCase):
                 ],
                 [
                     dict(name="customer_types", type=["string", "array"], index=1),
+                ],
+            ),
+            (
+                [
+                    "in",
+                    ["key", "customer_type"],
+                    "hello,",
+                ],
+                [
+                    dict(name="customer_type", type=["string", "number"], index=0),
                 ],
             ),
             (
