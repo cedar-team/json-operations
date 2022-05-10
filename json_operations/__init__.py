@@ -47,7 +47,7 @@ def get_json_schema() -> Dict:
             },
             {
                 "type": "array",
-                "minItems": 3,
+                "minItems": 2,
                 "items": [
                     {"enum": ["and", "or"]},
                     {
