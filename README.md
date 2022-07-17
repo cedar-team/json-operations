@@ -219,6 +219,33 @@ execute(operations, data1) # -> False
 execute(operations, data2) # -> True
 ```
 
+### nin (Not In operator)
+Check whether one value is NOT contained in another.
+
+##### Syntax
+```python
+["nin", <operator_or_literal>, <operator_or_literal>]
+```
+
+##### Example
+```python
+from json_operations import execute
+operations = ["nin", "my_type",  ["key", "types"]]
+data1 = {
+    "types": [
+        "type1", "type2"
+    ]
+}
+data2 = {
+    "types": [
+        "my_type", "type1"
+    ]
+}
+
+execute(operations, data1) # -> True
+execute(operations, data2) # -> False
+```
+
 ### and (And operator)
 Check whether all values are True. `and` supports nesting other operation inside
 it (See complex example).
