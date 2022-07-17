@@ -23,7 +23,7 @@ def get_json_schema() -> Dict:
                 "minItems": 3,
                 "maxItems": 3,
                 "items": [
-                    {"enum": ["=", "==", "!=", ">", ">=", "<", "<=", "in"]},
+                    {"enum": ["=", "==", "!=", ">", ">=", "<", "<=", "in", "nin"]},
                     {
                         "$def": "#/definitions/operationOrLiteral",
                     },
@@ -80,9 +80,9 @@ def _get_type_from_operator(operator, index):
         return "number"
     elif operator in {"=", "==", "!="}:
         return ["number", "string", "boolean"]
-    elif operator in {"in"}:
+    elif operator in {"in", "nin"}:
         if index == 0:
-            return ["string", "number"]
+            return ["string", "number", "boolean"]
         elif index == 1:
             return ["string", "array"]
 
@@ -97,6 +97,11 @@ def _or(*args):
 
 def _in(needle, stack):
     return needle in stack
+
+
+def _nin(needle, stack):
+    # "not in" operator
+    return needle not in stack
 
 
 def _is_number(a):
@@ -182,6 +187,7 @@ _operators = {
     "null": _null_,
     "!null": _not_null,
     "in": _in,
+    "nin": _nin,
 }
 
 _nesting_operators = {"and", "or"}

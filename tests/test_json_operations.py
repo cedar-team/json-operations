@@ -3,8 +3,8 @@ from unittest import TestCase
 from parameterized import parameterized
 
 from json_operations import (_and, _equal, _greater, _greater_or_equal, _in,
-                             _less, _less_or_equal, _not_equal, _or, execute,
-                             get_keys)
+                             _less, _less_or_equal, _nin, _not_equal, _or,
+                             execute, get_keys)
 
 
 class TestJsonOperations(TestCase):
@@ -130,6 +130,23 @@ class TestJsonOperations(TestCase):
     )
     def test_in_operator(self, a, b, result):
         self.assertEqual(_in(a, b), result)
+
+    @parameterized.expand(
+        [
+            ("a", ["a", "b"], False),
+            ("ab", ["a", "b"], True),
+            ("c", ["a", "b"], True),
+            ("b", "abc", False),
+            ("d", "abc", True),
+            ("bc", "abcd", False),
+            ("", "", False),
+            ("", "a", False),
+            ("", [""], False),
+            ("", ["a"], True),
+        ]
+    )
+    def test_nin_operator(self, a, b, result):
+        self.assertEqual(_nin(a, b), result)
 
     @parameterized.expand(
         [
@@ -364,7 +381,11 @@ class TestJsonOperations(TestCase):
                     "hello,",
                 ],
                 [
-                    dict(name="customer_type", type=["string", "number"], index=0),
+                    dict(
+                        name="customer_type",
+                        type=["string", "number", "boolean"],
+                        index=0,
+                    ),
                 ],
             ),
             (
@@ -374,7 +395,11 @@ class TestJsonOperations(TestCase):
                     "hello,",
                 ],
                 [
-                    dict(name="customer_type", type=["string", "number"], index=0),
+                    dict(
+                        name="customer_type",
+                        type=["string", "number", "boolean"],
+                        index=0,
+                    ),
                 ],
             ),
             (
@@ -438,7 +463,7 @@ class TestJsonOperations(TestCase):
                     dict(name="key1", type="number", index=0),
                     dict(name="key2", type="number", index=0),
                     dict(name="key3", type="string", index=0),
-                    dict(name="key4", type=["string", "number"], index=0),
+                    dict(name="key4", type=["string", "number", "boolean"], index=0),
                     dict(name="key5", type=["string", "array"], index=1),
                     dict(name="key6", type=None, index=0),
                     dict(name="key7", type=None, index=0),
