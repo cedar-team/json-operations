@@ -3,7 +3,7 @@ import setuptools
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
-__version__ = "2.0.4"
+__version__ = "2.1.0"
 
 setuptools.setup(
     name="json-operations",

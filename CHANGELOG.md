@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v2.1.0 (2022-07-17)
+### Feature
+* **operator:** Add nin operator ([`9099bf9`](https://github.com/cedar-team/json-operations/commit/9099bf9b2289f9207c8ffa9899618a53ecb48d29))
+
 ## v2.0.4 (2022-05-10)
 ### Fix
 * **schema:** Add missing array type from values. allow array in ([`94d562d`](https://github.com/cedar-team/json-operations/commit/94d562d12090eca3186f22cc7d665d2cf2b9dfab))
