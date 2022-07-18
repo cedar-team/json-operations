@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v2.1.1 (2022-07-18)
+### Fix
+* **docker:** Add newline ([`2075001`](https://github.com/cedar-team/json-operations/commit/2075001b3d1e710cdf48f4d3680c30c1e9d8b747))
+
+### Documentation
+* **README:** Add nin operator docs ([`9939440`](https://github.com/cedar-team/json-operations/commit/99394401ea909fdc1433008f901c7d6b85864e53))
+
 ## v2.1.0 (2022-07-17)
 ### Feature
 * **operator:** Add nin operator ([`9099bf9`](https://github.com/cedar-team/json-operations/commit/9099bf9b2289f9207c8ffa9899618a53ecb48d29))
