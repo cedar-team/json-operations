@@ -8,3 +8,6 @@ build-backend = "setuptools.build_meta"
 [tool.semantic_release]
 version_variable = "setup.py:__version__"
 branch = "main"
+
+[tool.isort]
+profile = "black"
