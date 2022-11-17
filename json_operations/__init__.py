@@ -256,14 +256,22 @@ def get_keys(json_operation: List) -> List[Dict]:
     return keys + subkeys
 
 
-def execute(json_operation: List, context) -> bool:
+def _execute_base(json_operation: List, context, handler, prefix=""):
     # Stop the recursion, we have reached a literal
     if not isinstance(json_operation, list):
         return json_operation
 
     operator, *unparsed = json_operation
     if operator in _nesting_operators:
-        values = [execute(val, context) for val in unparsed]
+        values = [
+            _execute_base(
+                val,
+                context,
+                handler,
+                prefix=".".join([prefix, str(index)]) if prefix else str(index),
+            )
+            for index, val in enumerate(unparsed)
+        ]
     else:
         values = []
         for val in unparsed:
@@ -280,6 +288,31 @@ def execute(json_operation: List, context) -> bool:
         raise JsonOperationError(f"Invalid operator: {operator}. {json_operation}")
 
     try:
-        return _operators[operator](*values)
+        return handler(_operators[operator](*values), prefix)
     except TypeError as e:
         raise JsonOperationError(f"{e}. {json_operation}")
+
+
+def _boolean_handler(value, prefix):
+    return value
+
+
+def execute(json_operation: List, context) -> bool:
+    return _execute_base(
+        json_operation=json_operation, context=context, handler=_boolean_handler
+    )
+
+
+def execute_debug(json_operation: List, context) -> bool:
+    results = []
+
+    def _debug_handler(value, prefix):
+        nonlocal results
+        results.append((prefix, value))
+        return value
+
+    _execute_base(
+        json_operation=json_operation, context=context, handler=_debug_handler
+    )
+
+    return dict(results)

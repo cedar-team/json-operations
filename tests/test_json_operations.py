@@ -2,9 +2,21 @@ from unittest import TestCase
 
 from parameterized import parameterized
 
-from json_operations import (_and, _equal, _greater, _greater_or_equal, _in,
-                             _less, _less_or_equal, _nin, _not_equal, _or,
-                             execute, get_keys)
+from json_operations import (
+    _and,
+    _equal,
+    _greater,
+    _greater_or_equal,
+    _in,
+    _less,
+    _less_or_equal,
+    _nin,
+    _not_equal,
+    _or,
+    execute,
+    execute_debug,
+    get_keys,
+)
 
 
 class TestJsonOperations(TestCase):
@@ -474,5 +486,115 @@ class TestJsonOperations(TestCase):
     def test_get_keys(self, a, result):
         self.assertEqual(
             get_keys(a),
+            result,
+        )
+
+    @parameterized.expand(
+        [
+            # 100.01 != 100
+            (
+                [
+                    "==",
+                    ["key", "customer_balance"],
+                    100,
+                ],
+                dict(
+                    customer_balance=100.01,
+                ),
+                {"": False},
+            ),
+            (
+                [
+                    "in",
+                    ["key", "division"],
+                    ["something", "my_division"],
+                ],
+                dict(
+                    division="my_division",
+                ),
+                {"": True},
+            ),
+            (
+                [
+                    "in",
+                    ["key", "division"],
+                    ["something", "not_my_division"],
+                ],
+                dict(
+                    division="my_division",
+                ),
+                {"": False},
+            ),
+            (
+                [
+                    "==",
+                    ["key", "customer_balance"],
+                    100,
+                ],
+                dict(
+                    customer_balance=100,
+                ),
+                {"": True},
+            ),
+            (
+                [
+                    "in",
+                    "b",
+                    ["key", "items"],
+                ],
+                dict(
+                    items=["a", "b", "c"],
+                ),
+                {"": True},
+            ),
+            (
+                [
+                    "and",
+                    [">", ["key", "customer_balance"], 100],
+                    [">", ["key", "age"], 50],
+                ],
+                dict(customer_balance=101, age=51),
+                {"0": True, "1": True, "": True},
+            ),
+            (
+                [
+                    "or",
+                    [
+                        "and",
+                        [">", ["key", "customer_balance"], 100],
+                        ["<", ["key", "age"], 99],
+                    ],
+                    [
+                        "and",
+                        ["==", ["key", "type"], "magic"],
+                        ["!=", ["key", "name"], "something"],
+                    ],
+                ],
+                dict(customer_balance=20, age=98, type="magic", name="not_something"),
+                {
+                    "0.0": False,
+                    "0.1": True,
+                    "0": False,
+                    "1.0": True,
+                    "1.1": True,
+                    "1": True,
+                    "": True,
+                },
+            ),
+            # Balance greater than 100, but age not less than 30
+            (
+                [
+                    "and",
+                    [">", ["key", "customer_balance"], 100],
+                    ["<", ["key", "age"], 30],
+                ],
+                dict(customer_balance=101, age=30),
+                {"0": True, "1": False, "": False},
+            ),
+        ]
+    )
+    def test_json_function(self, a, b, result):
+        self.assertEqual(
+            execute_debug(a, b),
             result,
         )
