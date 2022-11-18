@@ -309,6 +309,7 @@ def execute_debug(json_operation: List, context) -> bool:
     def _debug_handler(value, prefix):
         nonlocal results
         results.append((prefix, value))
+        return value
 
     _execute_base(
         json_operation=json_operation, context=context, handler=_debug_handler
