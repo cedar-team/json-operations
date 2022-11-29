@@ -10,7 +10,7 @@ jobs:
           # we actually need "github.event.pull_request.commits + 1" commit
           fetch-depth: 0
       - name: Fetch origin/master
-        run: git -c protocol.version=2 fetch --depth=1 --prune --progress --no-recurse-submodules origin +master
+        run: git -c protocol.version=2 fetch --depth=1 --prune --progress --no-recurse-submodules origin +main
       - name: Node setup
         uses: actions/setup-node@v2.1.0
       - name: Check commit syntax
@@ -21,16 +21,14 @@ jobs:
       - name: Get changed files
         id: changed_files
         run: |
-          changed_files=$(git diff --name-only --diff-filter=d origin/master..HEAD | grep -E '*\.py$' | tr '\n' ' ')
+          changed_files=$(git diff --name-only --diff-filter=d origin/main..HEAD | grep -E '*\.py$' | tr '\n' ' ')
           echo "::set-output name=changed_py_files::$changed_files"
       - name: Set up Python 3.6
-        if: steps.changed_files.outputs.changed_py_files != ''
         uses: actions/setup-python@dc73133d4da04e56a135ae2246682783cc7c7cb6 #pin to latest version v2.2.2
         with:
           python-version: 3.6
-      - name: Install linting packages
-        if: steps.changed_files.outputs.changed_py_files != ''
-        run: grep -P -o '(isort|black)==.+(?=;)' setup.py | xargs pip install
+      - name: Install python packages
+        run: pip install -e .[test]
       - name: black
         if: steps.changed_files.outputs.changed_py_files != ''
         run: black --check ${{ steps.changed_files.outputs.changed_py_files }}
