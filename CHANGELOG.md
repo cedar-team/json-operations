@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v2.2.0 (2022-11-30)
+### Feature
+* Add execute_debug function ([`a489a38`](https://github.com/cedar-team/json-operations/commit/a489a38c4dbda69742d7cf61d6454a78d5119c17))
+
 ## v2.1.1 (2022-07-18)
 ### Fix
 * **docker:** Add newline ([`2075001`](https://github.com/cedar-team/json-operations/commit/2075001b3d1e710cdf48f4d3680c30c1e9d8b747))
