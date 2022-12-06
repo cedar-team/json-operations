@@ -3,6 +3,7 @@ from unittest import TestCase
 from parameterized import parameterized
 
 from json_operations import (
+    NEVER_MATCH,
     _and,
     _equal,
     _greater,
@@ -593,8 +594,107 @@ class TestJsonOperations(TestCase):
             ),
         ]
     )
-    def test_json_function(self, a, b, result):
+    def test_execute_debug_function(self, a, b, result):
         self.assertEqual(
             execute_debug(a, b),
+            result,
+        )
+
+    @parameterized.expand(
+        [
+            # 100.01 != 100
+            (
+                [
+                    "==",
+                    ["key", "customer_balance"],
+                    100,
+                ],
+                dict(
+                    customer_balance=NEVER_MATCH,
+                ),
+                False,
+            ),
+            (
+                [
+                    "in",
+                    ["key", "division"],
+                    ["something", "my_division"],
+                ],
+                dict(
+                    division=NEVER_MATCH,
+                ),
+                False,
+            ),
+            (
+                [
+                    "nin",
+                    ["key", "division"],
+                    ["something", "my_division"],
+                ],
+                dict(
+                    division=NEVER_MATCH,
+                ),
+                False,
+            ),
+            (
+                [">", ["key", "customer_balance"], 100],
+                dict(customer_balance=NEVER_MATCH),
+                False,
+            ),
+            (
+                ["<", ["key", "customer_balance"], 100],
+                dict(customer_balance=NEVER_MATCH),
+                False,
+            ),
+            (
+                ["<=", ["key", "customer_balance"], 100],
+                dict(customer_balance=NEVER_MATCH),
+                False,
+            ),
+            (
+                [">=", ["key", "customer_balance"], 100],
+                dict(customer_balance=NEVER_MATCH),
+                False,
+            ),
+            (
+                ["==", ["key", "has_insurance"], True],
+                dict(has_insurance=NEVER_MATCH),
+                False,
+            ),
+            (
+                ["==", ["key", "has_insurance"], False],
+                dict(has_insurance=NEVER_MATCH),
+                False,
+            ),
+            (
+                ["!=", ["key", "has_insurance"], True],
+                dict(has_insurance=NEVER_MATCH),
+                False,
+            ),
+            (
+                ["!=", ["key", "has_insurance"], False],
+                dict(has_insurance=NEVER_MATCH),
+                False,
+            ),
+            (
+                ["!=", ["key", "has_insurance"], False],
+                dict(has_insurance=NEVER_MATCH),
+                False,
+            ),
+            (
+                ["null", ["key", "has_insurance"]],
+                dict(has_insurance=NEVER_MATCH),
+                False,
+            ),
+            (
+                ["!null", ["key", "has_insurance"]],
+                dict(has_insurance=NEVER_MATCH),
+                False,
+            ),
+        ]
+    )
+    def test_never_match(self, a, b, result):
+        self.assertEqual(
+            execute(a, b),
             result,
         )

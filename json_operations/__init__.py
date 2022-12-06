@@ -1,6 +1,10 @@
 from functools import wraps
 from typing import Dict, List, Sequence, Union
 
+# This is a value that will never match any operator. It is useful when evaluating multiple
+# rule sets and want to ignore rule sets targeting a specific field
+NEVER_MATCH = object()
+
 
 class JsonOperationError(Exception):
     pass
@@ -207,6 +211,13 @@ def _get_key(context, key, default=None):
         return context
 
 
+def _execute_operation(operation: str, values):
+    if NEVER_MATCH in values:
+        return False
+
+    return _operators[operation](*values)
+
+
 def get_keys(json_operation: List) -> List[Dict]:
     operator, *unparsed = json_operation
 
@@ -288,7 +299,7 @@ def _execute_base(json_operation: List, context, handler, prefix=""):
         raise JsonOperationError(f"Invalid operator: {operator}. {json_operation}")
 
     try:
-        return handler(_operators[operator](*values), prefix)
+        return handler(_execute_operation(operator, values), prefix)
     except TypeError as e:
         raise JsonOperationError(f"{e}. {json_operation}")
 
