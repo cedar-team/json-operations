@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v2.3.0 (2022-12-06)
+### Feature
+* **logic:** Add NEVER_MATCH value ([`af29fd1`](https://github.com/cedar-team/json-operations/commit/af29fd1224c04dbb258fb5b761618ad3b75915e1))
+
 ## v2.2.0 (2022-11-30)
 ### Feature
 * Add execute_debug function ([`a489a38`](https://github.com/cedar-team/json-operations/commit/a489a38c4dbda69742d7cf61d6454a78d5119c17))
