@@ -5,14 +5,15 @@ from parameterized import parameterized
 from json_operations import (
     NEVER_MATCH,
     _and,
+    _between,
     _equal,
     _greater,
     _greater_or_equal,
     _in,
     _less,
     _less_or_equal,
-    _nin,
     _not_equal,
+    _not_in,
     _or,
     execute,
     execute_debug,
@@ -158,8 +159,37 @@ class TestJsonOperations(TestCase):
             ("", ["a"], True),
         ]
     )
-    def test_nin_operator(self, a, b, result):
-        self.assertEqual(_nin(a, b), result)
+    def test_not_in_operator(self, a, b, result):
+        self.assertEqual(_not_in(a, b), result)
+
+    @parameterized.expand(
+        [
+            (2, 1, 3, True),
+            (1, 1, 3, True),
+            (3, 1, 3, True),
+            (0.99, 1, 3, False),
+            (3.01, 1, 3, False),
+            (0, 1, 3, False),
+            (0, -1, 1, True),
+            (-2, -3, -1, True),
+            (1.15, 1.1, 1.2, True),
+        ]
+    )
+    def test_between_operator(self, val, low, high, result):
+        self.assertEqual(_between(val, [low, high]), result)
+
+    @parameterized.expand(
+        [
+            (2, [1, "a"]),
+            (2, ["a", 1]),
+            ("hello", [1, 2]),
+            (1, [1]),
+            (1, []),
+        ]
+    )
+    def test_between_operator(self, val, vals):
+        with self.assertRaises(TypeError):
+            _between(val, vals)
 
     @parameterized.expand(
         [
@@ -296,6 +326,14 @@ class TestJsonOperations(TestCase):
                 ],
                 dict(customer_balance=101, age=30),
                 False,
+            ),
+            (
+                [
+                    "and",
+                    ["btw", ["key", "customer_balance"], [100, 200]],
+                ],
+                dict(customer_balance=101),
+                True,
             ),
         ]
     )
@@ -470,6 +508,7 @@ class TestJsonOperations(TestCase):
                             "!null",
                             ["key", "key7"],
                         ],
+                        ["btw", ["key", "key8"], [1, 3]],
                     ],
                 ],
                 [
@@ -480,6 +519,7 @@ class TestJsonOperations(TestCase):
                     dict(name="key5", type=["string", "array"], index=1),
                     dict(name="key6", type=None, index=0),
                     dict(name="key7", type=None, index=0),
+                    dict(name="key8", type="number", index=0),
                 ],
             ),
         ]
@@ -689,6 +729,11 @@ class TestJsonOperations(TestCase):
             (
                 ["!null", ["key", "has_insurance"]],
                 dict(has_insurance=NEVER_MATCH),
+                False,
+            ),
+            (
+                ["btw", ["key", "customer_balance"], [10, 20]],
+                dict(customer_balance=NEVER_MATCH),
                 False,
             ),
         ]

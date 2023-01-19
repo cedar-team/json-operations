@@ -219,18 +219,18 @@ execute(operations, data1) # -> False
 execute(operations, data2) # -> True
 ```
 
-### nin (Not In operator)
+### !in (Not In operator)
 Check whether one value is NOT contained in another.
 
 ##### Syntax
 ```python
-["nin", <operator_or_literal>, <operator_or_literal>]
+["!in", <operator_or_literal>, <operator_or_literal>]
 ```
 
 ##### Example
 ```python
 from json_operations import execute
-operations = ["nin", "my_type",  ["key", "types"]]
+operations = ["!in", "my_type",  ["key", "types"]]
 data1 = {
     "types": [
         "type1", "type2"
@@ -240,6 +240,33 @@ data2 = {
     "types": [
         "my_type", "type1"
     ]
+}
+
+execute(operations, data1) # -> True
+execute(operations, data2) # -> False
+```
+### btw (Between operator)
+Check whether one value is between 2 other values. Equivalent to
+```
+low <= val <= high
+```
+Both low and high value are included.
+
+
+##### Syntax
+```python
+["btw", <value_operator_or_literal>, [<low_operator_or_literal>, <high_operator_or_literal>]]
+```
+
+##### Example
+```python
+from json_operations import execute
+operations = ["btw", ["key", "val"],  [1, 3]]
+data1 = {
+    "val": 2
+}
+data2 = {
+    "val" : 4
 }
 
 execute(operations, data1) # -> True
