@@ -23,10 +23,10 @@ jobs:
         run: |
           changed_files=$(git diff --name-only --diff-filter=d origin/main..HEAD | grep -E '*\.py$' | tr '\n' ' ')
           echo "::set-output name=changed_py_files::$changed_files"
-      - name: Set up Python 3.6
+      - name: Set up Python
         uses: actions/setup-python@dc73133d4da04e56a135ae2246682783cc7c7cb6 #pin to latest version v2.2.2
         with:
-          python-version: 3.6
+          python-version: 3.7
       - name: Install python packages
         run: pip install -e .[test]
       - name: black

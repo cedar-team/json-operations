@@ -27,7 +27,21 @@ def get_json_schema() -> Dict:
                 "minItems": 3,
                 "maxItems": 3,
                 "items": [
-                    {"enum": ["=", "==", "!=", ">", ">=", "<", "<=", "in", "nin"]},
+                    {
+                        "enum": [
+                            "=",
+                            "==",
+                            "!=",
+                            ">",
+                            ">=",
+                            "<",
+                            "<=",
+                            "in",
+                            "nin",
+                            "!in",
+                            "btw",
+                        ]
+                    },
                     {
                         "$def": "#/definitions/operationOrLiteral",
                     },
@@ -80,11 +94,11 @@ def _use_type_from_val(operator):
 
 
 def _get_type_from_operator(operator, index):
-    if operator in {">", "<", ">=", "<="}:
+    if operator in {">", "<", ">=", "<=", "btw"}:
         return "number"
     elif operator in {"=", "==", "!="}:
         return ["number", "string", "boolean"]
-    elif operator in {"in", "nin"}:
+    elif operator in {"in", "nin", "!in"}:
         if index == 0:
             return ["string", "number", "boolean"]
         elif index == 1:
@@ -103,7 +117,7 @@ def _in(needle, stack):
     return needle in stack
 
 
-def _nin(needle, stack):
+def _not_in(needle, stack):
     # "not in" operator
     return needle not in stack
 
@@ -112,23 +126,25 @@ def _is_number(a):
     return isinstance(a, (int, float)) and not isinstance(a, bool)
 
 
-def _same_type(a, b):
+def _same_type(*args):
     # Different number types aren't the same type, so bucket all numbers
-    if _is_number(a) and _is_number(b):
+    if all(_is_number(arg) for arg in args):
         return True
 
-    return type(a) == type(b)
+    # Check if all types are the same
+    return len({type(arg) for arg in args}) == 1
 
 
 def _raise_type_error(operator_str):
     def dec(fn):
         @wraps(fn)
-        def inner(a, b):
-            if not _same_type(a, b):
+        def inner(*args):
+            if not _same_type(*args):
+                error_type_msg = " and ".join(type(arg).__name__ for arg in args)
                 raise TypeError(
-                    f"'{operator_str}' not supported between instances of '{type(a).__name__}' and '{type(b).__name__}'"
+                    f"'{operator_str}' not supported between instances of {error_type_msg}"
                 )
-            return fn(a, b)
+            return fn(*args)
 
         return inner
 
@@ -158,6 +174,17 @@ def _less(a, b):
 @_raise_type_error("<=")
 def _less_or_equal(a, b):
     return a <= b
+
+
+def _between(val, range):
+    if not isinstance(range, list):
+        raise TypeError("btw list is not a list")
+    if len(range) != 2 or not _is_number(range[0]) or not _is_number(range[1]):
+        raise TypeError("btw list must have to number type items")
+    if not _is_number(val):
+        raise TypeError(f"btw cannot be used with type {type(val)}")
+
+    return range[0] <= val <= range[1]
 
 
 @_raise_type_error("!=")
@@ -191,7 +218,9 @@ _operators = {
     "null": _null_,
     "!null": _not_null,
     "in": _in,
-    "nin": _nin,
+    "nin": _not_in,
+    "!in": _not_in,
+    "btw": _between,
 }
 
 _nesting_operators = {"and", "or"}
