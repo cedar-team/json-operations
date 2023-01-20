@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v2.4.0 (2023-01-20)
+### Feature
+* Add btw operator and !in as alias for nin operator ([`9c040b9`](https://github.com/cedar-team/json-operations/commit/9c040b9fb6f5af2714c0bcc7d8c854e1fcc47b82))
+
 ## v2.3.0 (2022-12-06)
 ### Feature
 * **logic:** Add NEVER_MATCH value ([`af29fd1`](https://github.com/cedar-team/json-operations/commit/af29fd1224c04dbb258fb5b761618ad3b75915e1))
