@@ -40,6 +40,7 @@ def get_json_schema() -> Dict:
                             "nin",
                             "!in",
                             "btw",
+                            "&",
                         ]
                     },
                     {
@@ -187,6 +188,13 @@ def _between(val, range):
     return range[0] <= val <= range[1]
 
 
+def _intersection(a, b):
+    if not isinstance(a, list) or not isinstance(b, list):
+        raise TypeError("intersection operator must be used with 2 lists")
+
+    return bool(set(a) & set(b))
+
+
 @_raise_type_error("!=")
 def _not_equal(a, b):
     if not _same_type(a, b):
@@ -221,6 +229,7 @@ _operators = {
     "nin": _not_in,
     "!in": _not_in,
     "btw": _between,
+    "&": _intersection,
 }
 
 _nesting_operators = {"and", "or"}

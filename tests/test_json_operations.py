@@ -10,6 +10,7 @@ from json_operations import (
     _greater,
     _greater_or_equal,
     _in,
+    _intersection,
     _less,
     _less_or_equal,
     _not_equal,
@@ -180,6 +181,21 @@ class TestJsonOperations(TestCase):
 
     @parameterized.expand(
         [
+            ([], [], False),
+            ([0], [0], True),
+            ([1, 0], [0, 2], True),
+            ([1, 2, 3], [3], True),
+            ([1, "2", 3], ["2"], True),
+            ([1], ["1"], False),
+            ([], [0], False),
+            ([0], [], False),
+        ]
+    )
+    def test_intersection_operator(self, a, b, result):
+        self.assertEqual(_intersection(a, b), result)
+
+    @parameterized.expand(
+        [
             (2, [1, "a"]),
             (2, ["a", 1]),
             ("hello", [1, 2]),
@@ -277,6 +293,28 @@ class TestJsonOperations(TestCase):
                 ],
                 dict(
                     customer_balance=100,
+                ),
+                True,
+            ),
+            (
+                [
+                    "&",
+                    ["key", "ids"],
+                    [2],
+                ],
+                dict(
+                    ids=[3],
+                ),
+                False,
+            ),
+            (
+                [
+                    "&",
+                    ["key", "ids"],
+                    [2],
+                ],
+                dict(
+                    ids=[1, 2],
                 ),
                 True,
             ),
