@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v2.6.0 (2023-03-23)
+### Feature
+* **logic:** Fix type bug in intersection and add not intersection ([`3f7d98c`](https://github.com/cedar-team/json-operations/commit/3f7d98c2840ad25bfcc5346e2961918fb76dc549))
+
 ## v2.5.0 (2023-03-20)
 ### Feature
 * **logic:** Add intersection operator & ([`1ec4628`](https://github.com/cedar-team/json-operations/commit/1ec4628f2d875adc39c42f9e34ae63be9cd37159))
