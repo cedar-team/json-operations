@@ -7,6 +7,7 @@ from json_operations import (
     _and,
     _between,
     _equal,
+    _get_type_from_operator,
     _greater,
     _greater_or_equal,
     _in,
@@ -15,6 +16,8 @@ from json_operations import (
     _less_or_equal,
     _not_equal,
     _not_in,
+    _not_intersection,
+    _operators,
     _or,
     execute,
     execute_debug,
@@ -193,6 +196,7 @@ class TestJsonOperations(TestCase):
     )
     def test_intersection_operator(self, a, b, result):
         self.assertEqual(_intersection(a, b), result)
+        self.assertEqual(_not_intersection(a, b), not result)
 
     @parameterized.expand(
         [
@@ -408,12 +412,12 @@ class TestJsonOperations(TestCase):
                 [
                     dict(
                         name="customer_something",
-                        type=["number", "string", "boolean"],
+                        type=["number", "string", "boolean", "array"],
                         index=0,
                     ),
                     dict(
                         name="customer_another",
-                        type=["number", "string", "boolean"],
+                        type=["number", "string", "boolean", "array"],
                         index=1,
                     ),
                 ],
@@ -781,3 +785,16 @@ class TestJsonOperations(TestCase):
             execute(a, b),
             result,
         )
+
+    def test_full_coverage_of_get_type_from_operator(self):
+        # This makes sure all operators have a type
+        operators_to_test = [
+            operator
+            for operator in _operators.keys()
+            if operator not in ["and", "or", "null", "!null"]
+        ]
+        for operator in operators_to_test:
+            for i in (0, 1):
+                self.assertIsNotNone(
+                    _get_type_from_operator(operator, i), f"{operator} is None"
+                )
