@@ -273,6 +273,54 @@ execute(operations, data1) # -> True
 execute(operations, data2) # -> False
 ```
 
+### & (Intersection operator)
+Check whether 2 arrays have any members in common
+
+
+##### Syntax
+```python
+["&", <value_operator_or_literal>, <value_operator_or_literal>]
+```
+
+##### Example
+```python
+from json_operations import execute
+operations = ["&", ["key", "val"],  [1, 2]]
+data1 = {
+    "val": [2,3]
+}
+data2 = {
+    "val" : [3,4]
+}
+
+execute(operations, data1) # -> True
+execute(operations, data2) # -> False
+```
+
+### !& (Not Intersection operator)
+Check whether 2 arrays have no members in common
+
+
+##### Syntax
+```python
+["!&", <value_operator_or_literal>, <value_operator_or_literal>]
+```
+
+##### Example
+```python
+from json_operations import execute
+operations = ["&", ["key", "val"],  [1, 2]]
+data1 = {
+    "val": [2,3]
+}
+data2 = {
+    "val" : [3,4]
+}
+
+execute(operations, data1) # -> False
+execute(operations, data2) # -> True
+```
+
 ### and (And operator)
 Check whether all values are True. `and` supports nesting other operation inside
 it (See complex example).

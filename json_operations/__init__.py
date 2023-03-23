@@ -41,6 +41,7 @@ def get_json_schema() -> Dict:
                             "!in",
                             "btw",
                             "&",
+                            "!&",
                         ]
                     },
                     {
@@ -98,12 +99,16 @@ def _get_type_from_operator(operator, index):
     if operator in {">", "<", ">=", "<=", "btw"}:
         return "number"
     elif operator in {"=", "==", "!="}:
-        return ["number", "string", "boolean"]
+        return ["number", "string", "boolean", "array"]
     elif operator in {"in", "nin", "!in"}:
         if index == 0:
             return ["string", "number", "boolean"]
         elif index == 1:
             return ["string", "array"]
+    elif operator in {"&", "!&"}:
+        return ["array"]
+
+    return None
 
 
 def _and(*args):
@@ -195,6 +200,10 @@ def _intersection(a, b):
     return bool(set(a) & set(b))
 
 
+def _not_intersection(a, b):
+    return not _intersection(a, b)
+
+
 @_raise_type_error("!=")
 def _not_equal(a, b):
     if not _same_type(a, b):
@@ -230,6 +239,7 @@ _operators = {
     "!in": _not_in,
     "btw": _between,
     "&": _intersection,
+    "!&": _not_intersection,
 }
 
 _nesting_operators = {"and", "or"}
