@@ -13,6 +13,9 @@ jobs:
         run: git -c protocol.version=2 fetch --depth=1 --prune --progress --no-recurse-submodules origin +main
       - name: Node setup
         uses: actions/setup-node@v2.1.0
+      - name: Install Aikido Safe Chain
+        run: curl -fsSL https://github.com/AikidoSec/safe-chain/releases/download/1.4.4/install-safe-chain.sh | sh -s -- --ci
+
       - name: Check commit syntax
         run: |
           yarn add @commitlint/cli@12.1.4 @commitlint/config-conventional
